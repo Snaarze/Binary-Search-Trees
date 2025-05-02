@@ -1,14 +1,17 @@
 import { Node } from "./Node.js";
 import { merge, mergeSort } from "./sort.js";
 class Tree {
+  // initialized the object body
   constructor(array) {
     this.root = this.buildTree(mergeSort(array));
   }
 
+  // this function return the root of the tree
   getRoot() {
     return this.root;
   }
 
+  // this function build the tree as inbalanced
   buildTree(array, start = 0, end = array.length - 1) {
     let middlePointer = Math.floor((start + end) / 2);
 
@@ -21,6 +24,7 @@ class Tree {
     return node;
   }
 
+  // this function insert a value
   insert(root, key) {
     if (root === null) {
       return new Node(key);
@@ -38,6 +42,7 @@ class Tree {
     return root;
   }
 
+  // this function delete a specific node
   delete(root, value) {
     if (root === null) return null;
 
@@ -61,6 +66,7 @@ class Tree {
     return root;
   }
 
+  // this function return the minimum number or nodes that can be found
   findMin(node) {
     while (node.left !== null) {
       node = node.left;
@@ -78,6 +84,7 @@ class Tree {
 
     let currentNode = [];
     currentNode.push(node);
+    // traverse on node as long as there are node
     while (currentNode.length !== 0) {
       let firstNode = currentNode[0];
       console.log(callback(firstNode));
@@ -130,6 +137,7 @@ class Tree {
     callback(array);
   }
 
+  // this functions logs the node as traversal method
   logsTheNode(node) {
     let balanced = "";
     node.forEach((item) => {
@@ -147,10 +155,11 @@ class Tree {
   }
 
   height(value, root = this.find(value, this.getRoot())) {
+    // if current root is  falsy value, return null
     if (!root) {
       return null;
     }
-
+    // if root is null return -1
     if (root === null) {
       return -1;
     }
@@ -182,14 +191,14 @@ class Tree {
   }
 
   isBalanced(root = this.getRoot()) {
-    // root is null until the function traverse until the end of the tree
-    // return null
     if (root === null) {
       return true;
     }
 
     let leftHeight = this.height(root, root.right);
     let rightheight = this.height(root, root.left);
+    // if the height of leaf each node is greating than 1
+    // return false
     if (leftHeight - rightheight > 1) {
       return false;
     }
@@ -197,6 +206,7 @@ class Tree {
     return this.isBalanced(root.left) && this.isBalanced(root.right);
   }
 
+  // this function  sort an unbalanced array to create balanced tree
   rebalanced(array = [], root = this.getRoot()) {
     if (root === null) {
       return root;
@@ -209,9 +219,12 @@ class Tree {
   }
 
   find(value, root) {
+    // if not found return null
     if (root === null) {
       return null;
     }
+
+    // if found return the root
     if (root.data === value) {
       return root;
     }
@@ -224,6 +237,7 @@ class Tree {
   }
 }
 
+// this function generate random numbers upto 100 and return it as an array
 const randomArray = (array = []) => {
   for (let i = 0; i < 100; i++) {
     array.push(Math.round(Math.random() * 100));
