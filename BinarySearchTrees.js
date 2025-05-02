@@ -1,5 +1,5 @@
 import { Node } from "./Node.js";
-import { mergeSort } from "./sort.js";
+import { merge, mergeSort } from "./sort.js";
 class Tree {
   constructor(array) {
     this.root = this.buildTree(mergeSort(array));
@@ -80,7 +80,7 @@ class Tree {
     currentNode.push(node);
     while (currentNode.length !== 0) {
       let firstNode = currentNode[0];
-      console.log(callback(firstNode.data));
+      console.log(callback(firstNode));
       if (firstNode.left !== null) {
         currentNode.push(firstNode.left);
       }
@@ -92,7 +92,7 @@ class Tree {
     }
   }
 
-  preOrder(callback, root, array = []) {
+  preOrder(callback, root = this.root, array = []) {
     if (typeof callback !== "function") {
       throw new Error("Parameter is not a function");
     }
@@ -104,7 +104,7 @@ class Tree {
     this.preOrder(callback, root.right, array);
   }
 
-  inOrder(callback, root, array = []) {
+  inOrder(callback, root = this.root, array = []) {
     if (typeof callback !== "function") {
       throw new Error("Parameter is not a function");
     }
@@ -117,7 +117,7 @@ class Tree {
     this.inOrder(callback, root.right, array);
   }
 
-  postOrder(callback, root, array = []) {
+  postOrder(callback, root = this.root, array = []) {
     if (typeof callback !== "function") {
       throw new Error("Parameter is not a function");
     }
@@ -132,7 +132,6 @@ class Tree {
 
   logsTheNode(node) {
     let balanced = "";
-
     node.forEach((item) => {
       if (item === node[node.length - 1]) {
         return (balanced += item);
@@ -143,13 +142,70 @@ class Tree {
     console.log(balanced);
   }
 
-  height(value, node) {
-    let data = this.find(value, node);
-    let leftCounter = 0;
-    let rightCounter = 0;
-    while (data.left !== null) {
-      data.left;
+  logs(node) {
+    console.log(node);
+  }
+
+  height(value, root = this.find(value, this.getRoot())) {
+    if (!root) {
+      return null;
     }
+
+    if (root === null) {
+      return -1;
+    }
+
+    let leftRoot = this.height(value, root.left);
+    let rightRoot = this.height(value, root.right);
+
+    return Math.max(leftRoot, rightRoot) + 1;
+  }
+
+  depth(value, root = this.getRoot(), counter = 0) {
+    // root is null until the function traverse until the end of the tree
+    // return null
+    if (root === null) {
+      return null;
+    }
+    // base case if valeu is equal to root.data
+    // stop the recursive
+    if (value === root.data) {
+      return counter;
+    }
+
+    // if the value still havent found keep traversing
+    if (value > root.data) {
+      return this.depth(value, root.right, counter + 1);
+    } else {
+      return this.depth(value, root.left, counter + 1);
+    }
+  }
+
+  isBalanced(root = this.getRoot()) {
+    // root is null until the function traverse until the end of the tree
+    // return null
+    if (root === null) {
+      return true;
+    }
+
+    let leftHeight = this.height(root, root.right);
+    let rightheight = this.height(root, root.left);
+    if (leftHeight - rightheight > 1) {
+      return false;
+    }
+
+    return this.isBalanced(root.left) && this.isBalanced(root.right);
+  }
+
+  rebalanced(array = [], root = this.getRoot()) {
+    if (root === null) {
+      return root;
+    }
+    array.push(root.data);
+    this.rebalanced(array, root.left);
+    this.rebalanced(array, root.right);
+
+    return (this.root = this.buildTree(mergeSort(array)));
   }
 
   find(value, root) {
@@ -168,6 +224,13 @@ class Tree {
   }
 }
 
+const randomArray = (array = []) => {
+  for (let i = 0; i < 100; i++) {
+    array.push(Math.round(Math.random() * 100));
+  }
+  return array;
+};
+
 const prettyPrint = (node, prefix = "", isLeft = true) => {
   if (node === null) {
     return;
@@ -181,25 +244,21 @@ const prettyPrint = (node, prefix = "", isLeft = true) => {
   }
 };
 // const tree = new Tree([10, 20, 30, 32, 34, 36, 50, 40, 60, 65, 70, 75, 80, 85]);
-const tree = new Tree([1, 7, 4, 23, 8, 9, 4, 3, 5, 7, 9, 67, 6345, 324]);
-
-tree.insert(tree.getRoot(), 2);
-tree.insert(tree.getRoot(), 28);
-tree.insert(tree.getRoot(), 22);
-tree.insert(tree.getRoot(), 15);
-tree.insert(tree.getRoot(), 42);
-tree.insert(tree.getRoot(), 13);
-tree.insert(tree.getRoot(), 87);
-tree.insert(tree.getRoot(), 6);
-tree.insert(tree.getRoot(), 99);
-tree.insert(tree.getRoot(), 55);
-tree.insert(tree.getRoot(), 300);
-tree.insert(tree.getRoot(), 43);
-tree.insert(tree.getRoot(), 4000);
-tree.delete(tree.getRoot(), 324);
-// console.log(tree.find(2, tree.getRoot()));
-// tree.postOrder(tree.logsTheNode, tree.getRoot());
-// tree.inOrder(tree.logsTheNode, tree.getRoot());
-// tree.preOrder(tree.logsTheNode, tree.getRoot());
-console.log(tree.height(2, tree.getRoot()));
+const tree = new Tree(randomArray());
 console.log(prettyPrint(tree.getRoot()));
+console.log(tree.isBalanced());
+console.log(tree.preOrder(tree.logsTheNode));
+console.log(tree.inOrder(tree.logsTheNode));
+console.log(tree.postOrder(tree.logsTheNode));
+tree.insert(tree.getRoot(), 103);
+tree.insert(tree.getRoot(), 201);
+tree.insert(tree.getRoot(), 105);
+tree.insert(tree.getRoot(), 15);
+console.log(tree.isBalanced());
+tree.rebalanced();
+console.log(tree.isBalanced());
+console.log(prettyPrint(tree.getRoot()));
+console.log(tree.preOrder(tree.logsTheNode));
+console.log(tree.inOrder(tree.logsTheNode));
+console.log(tree.postOrder(tree.logsTheNode));
+console.log(tree.levelOrder(tree.logs));
